@@ -1,0 +1,7 @@
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+kubeconfig
+.terraform.lock.hcl
+*.backup
