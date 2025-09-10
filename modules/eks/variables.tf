@@ -4,10 +4,9 @@ variable "prefix" {
   default     = "fullcycle"
 }
 
-variable "vpc_cidr_block" {
-  description = "CIDR block for the VPC"
+variable "aws_vpc_id" {
+  description = "The ID of the VPC where the EKS cluster will be deployed"
   type        = string
-  default     = "10.0.0.0/16"
 }
 
 variable "cluster_name" {
@@ -20,6 +19,11 @@ variable "retention_in_days" {
   description = "Number of days to retain CloudWatch logs"
   type        = number
   default     = 7
+}
+
+variable "aws_subnet_ids" {
+  description = "List of subnet IDs for the EKS cluster"
+  type        = list(string)
 }
 
 variable "eks_node_desired_capacity" {
@@ -39,4 +43,3 @@ variable "eks_node_max_size" {
   type        = number
   default     = 2
 }
-

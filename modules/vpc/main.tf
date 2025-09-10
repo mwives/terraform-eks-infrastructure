@@ -18,7 +18,7 @@ resource "aws_subnet" "subnets" {
   }
 }
 
-resource "aws_internet_gateway" "new_igw" {
+resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.new_vpc.id
   tags = {
     Name = "${var.prefix}-igw"
@@ -29,7 +29,7 @@ resource "aws_route_table" "new_rt" {
   vpc_id = aws_vpc.new_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.new_igw.id
+    gateway_id = aws_internet_gateway.igw.id
   }
   tags = {
     Name = "${var.prefix}-rt"
