@@ -1,11 +1,16 @@
 resource "aws_vpc" "new_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
   tags = {
     Name = "${var.prefix}-vpc"
   }
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
 resource "aws_subnet" "subnets" {
   count                   = 2
@@ -13,8 +18,10 @@ resource "aws_subnet" "subnets" {
   vpc_id                  = aws_vpc.new_vpc.id
   cidr_block              = cidrsubnet(aws_vpc.new_vpc.cidr_block, 8, count.index)
   map_public_ip_on_launch = true
+
   tags = {
-    Name = "${var.prefix}-subnet-${count.index + 1}"
+    Name                     = "${var.prefix}-subnet-${count.index + 1}"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
@@ -27,10 +34,12 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_route_table" "new_rt" {
   vpc_id = aws_vpc.new_vpc.id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+
   tags = {
     Name = "${var.prefix}-rt"
   }

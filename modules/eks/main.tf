@@ -3,12 +3,19 @@ resource "aws_security_group" "sg" {
   description = "Security group for ${var.prefix} cluster"
   vpc_id      = var.aws_vpc_id
 
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-    prefix_list_ids = []
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -108,7 +115,7 @@ resource "aws_iam_role_policy_attachment" "node-AmazonEC2ContainerRegistryReadOn
 
 resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
-  node_group_name = "${var.prefix}-${var.cluster_name}-node-group-1"
+  node_group_name = "${var.prefix}-${var.cluster_name}-node-group"
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.aws_subnet_ids
   instance_types  = ["t3.micro"]
@@ -124,4 +131,8 @@ resource "aws_eks_node_group" "node_group" {
     aws_iam_role_policy_attachment.node-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node-AmazonEC2ContainerRegistryReadOnly,
   ]
+
+  tags = {
+    Name = "${var.prefix}-${var.cluster_name}-node-group"
+  }
 }
